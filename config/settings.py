@@ -52,11 +52,9 @@ class Settings(BaseModel):
         )
     )
     model: str = Field(
-        default="claude-opus-4-5",
         default_factory=lambda: _config_data.get("model", {}).get("name", "claude-opus-4-5")
     )
     max_tokens: int = Field(
-        default=4096,
         default_factory=lambda: _config_data.get("model", {}).get("max_tokens", 4096)
     )
 
@@ -86,11 +84,9 @@ class Settings(BaseModel):
         )
     )
     collection_name: str = Field(
-        default="healthcare_knowledge",
         default_factory=lambda: _config_data.get("storage", {}).get("collection_name", "healthcare_knowledge")
     )
     embedding_model: str = Field(
-        default="all-MiniLM-L6-v2",
         default_factory=lambda: _config_data.get("model", {}).get("embedding_model", "all-MiniLM-L6-v2")
     )
 
@@ -98,19 +94,15 @@ class Settings(BaseModel):
     top_k_retrieval: int = Field(
         default=12,
         default_factory=lambda: _config_data.get("retrieval", {}).get("top_k_retrieval", 12)
+    )_factory=lambda: _config_data.get("retrieval", {}).get("top_k_retrieval", 12)
     )
     top_k_rerank: int = Field(
-        default=6,
         default_factory=lambda: _config_data.get("retrieval", {}).get("top_k_rerank", 6)
     )
     chunk_size: int = Field(
-        default=800,
         default_factory=lambda: _config_data.get("retrieval", {}).get("chunk_size", 800)
     )
     chunk_overlap: int = Field(
-        default=120,
-        default_factory=lambda: _config_data.get("retrieval", {}).get("chunk_overlap", 120)
-    )
 
     # ── Topics ──────────────────────────────────────────────────────
     health_topics: list[str] = Field(
