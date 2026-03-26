@@ -1,5 +1,6 @@
-# Environment
+# Environment & Secrets
 .env
+config.json
 .venv/
 venv/
 __pycache__/

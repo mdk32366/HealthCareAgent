@@ -1,0 +1,55 @@
+{
+  "api_keys": {
+    "anthropic_api_key": "sk-ant-your-key-here",
+    "tavily_api_key": "tvly-your-key-here"
+  },
+  "model": {
+    "name": "claude-opus-4-5",
+    "max_tokens": 4096,
+    "embedding_model": "all-MiniLM-L6-v2"
+  },
+  "storage": {
+    "chroma_persist_dir": "./data/chroma_db",
+    "obsidian_vault_dir": "./data/obsidian_vault",
+    "collection_name": "healthcare_knowledge"
+  },
+  "retrieval": {
+    "top_k_retrieval": 12,
+    "top_k_rerank": 6,
+    "chunk_size": 800,
+    "chunk_overlap": 120
+  },
+  "health_topics": [
+    "vaccines",
+    "cancer",
+    "hemophilia",
+    "weight control",
+    "diabetes"
+  ],
+  "therapy_dimensions": [
+    "FDA-approved / clinical",
+    "Homeopathic / naturopathic",
+    "Supplementation",
+    "Surgical / procedural"
+  ],
+  "trusted_domains": [
+    "nih.gov",
+    "pubmed.ncbi.nlm.nih.gov",
+    "cdc.gov",
+    "fda.gov",
+    "who.int",
+    "cancer.gov",
+    "cancer.org",
+    "mayoclinic.org",
+    "medlineplus.gov",
+    "hopkinsmedicine.org",
+    "clevelandclinic.org",
+    "hemophilia.org",
+    "nhlbi.nih.gov",
+    "diabetes.org",
+    "niddk.nih.gov",
+    "nccih.nih.gov",
+    "examine.com",
+    "cochranelibrary.com"
+  ]
+}

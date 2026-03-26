@@ -36,10 +36,20 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure API keys
+# 4. Configure API keys (choose one method)
+
+# ── Method A: Using config.json (recommended for production) ────────
+cp config.example.json config.json
+# Edit config.json and add your API keys:
+#   - ANTHROPIC_API_KEY (required)
+#   - TAVILY_API_KEY (recommended, free tier at tavily.com)
+
+# ── Method B: Using .env file (for local development) ──────────────
 cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY (required)
-# Add TAVILY_API_KEY for best web search results (free tier at tavily.com)
+# Edit .env and add your ANTHROPIC_API_KEY and TAVILY_API_KEY
+
+# Note: config.json takes precedence over .env variables
+# Do NOT commit config.json to version control—it's in .gitignore
 ```
 
 ---
@@ -200,14 +210,37 @@ print(response.therapy_sections["Supplementation"])
 
 ## Configuration
 
-All settings live in `config/settings.py` and can be overridden via `.env`:
+Settings are loaded from multiple sources (in order of precedence):
 
-| Variable | Default | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | — | Required |
-| `TAVILY_API_KEY` | — | Recommended (free tier) |
-| `CHROMA_PERSIST_DIR` | `./data/chroma_db` | Vector store location |
-| `OBSIDIAN_VAULT_DIR` | `./data/obsidian_vault` | Notes location |
+1. **config.json** (production, secrets protected)
+2. **Environment variables** (.env file or system env)
+3. **Built-in defaults** (config/settings.py)
+
+### Setup Options
+
+**Production / Secure Setup:**
+```bash
+cp config.example.json config.json
+# Edit config.json with your API keys
+# config.json is in .gitignore and will not be committed
+```
+
+**Development / Simple Setup:**
+```bash
+cp .env.example .env
+# Edit .env with your API keys
+# Both methods work, but config.json is recommended for production
+```
+
+### Configuration Keys
+
+| Setting | Source | Default | Description |
+|---|---|---|---|
+| `api_keys.anthropic_api_key` | config.json or env | — | Required. Get from https://console.anthropic.com |
+| `api_keys.tavily_api_key` | config.json or env | — | Recommended. Free tier at https://tavily.com |
+| `model.name` | config.json | `claude-opus-4-5` | Anthropic model to use |
+| `storage.chroma_persist_dir` | config.json or env | `./data/chroma_db` | Vector database location |
+| `storage.obsidian_vault_dir` | config.json or env | `./data/obsidian_vault` | Knowledge notes location |
 
 ---
 
