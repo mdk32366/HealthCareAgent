@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Ask a question",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "main",
+      "args": ["ask", "What are all treatment options for Type 2 diabetes?"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "List notes",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "main",
+      "args": ["notes"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Show stats",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "main",
+      "args": ["stats"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" },
+      "console": "integratedTerminal"
+    }
+  ]
+}
