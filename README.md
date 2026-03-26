@@ -24,84 +24,250 @@ with persistent memory via ChromaDB and an Obsidian Markdown vault.
 
 ---
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Choose Your Interface](#choose-your-interface-cli-or-web)
+- [Quick Start](#quick-start)
+- [Advanced: Memory & Notes](#advanced-memory--notes)
+- [Architecture](#architecture)
+- [Documentation Guide](#documentation-guide)
+
+---
+
 ## Installation
 
+### Step 1: Clone & Setup Environment
+
 ```bash
-# 1. Clone and enter
-git clone https://github.com/your-org/health-rag-agent
-cd health-rag-agent
+# 1. Clone the repository
+git clone https://github.com/mdk32366/HealthCareAgent.git
+cd HealthCareAgent/health_rag_agent
 
-# 2. Create a virtual environment
+# 2. Create virtual environment
 python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
 
-# 3. Install dependencies
+# 3. Activate virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+
+# 4. Install dependencies
 pip install -r requirements.txt
+```
 
-# 4. Configure API keys (choose one method)
+### Step 2: Configure API Keys
 
-# ── Method A: Using config.json (recommended for production) ────────
+**Choose Method A (Recommended) or Method B below:**
+
+#### Method A: Using `config.json` (Production-Recommended)
+
+```bash
+# Copy the template
 cp config.example.json config.json
-# Edit config.json and add your API keys:
-#   - ANTHROPIC_API_KEY (required)
-#   - TAVILY_API_KEY (recommended, free tier at tavily.com)
 
-# ── Method B: Using .env file (for local development) ──────────────
+# Edit config.json with your API keys
+# Windows: notepad config.json
+# macOS/Linux: nano config.json
+```
+
+Edit the file and add your keys:
+```json
+{
+  "api_keys": {
+    "anthropic_api_key": "sk-ant-your-actual-key",
+    "tavily_api_key": "tvly-your-actual-key"
+  },
+  ...
+}
+```
+
+#### Method B: Using `.env` File (Development)
+
+```bash
+# Copy the template
 cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY and TAVILY_API_KEY
 
-# Note: config.json takes precedence over .env variables
-# Do NOT commit config.json to version control—it's in .gitignore
+# Edit .env with your API keys
+# Windows: notepad .env
+# macOS/Linux: nano .env
+```
+
+Add your keys:
+```bash
+ANTHROPIC_API_KEY=sk-ant-your-actual-key
+TAVILY_API_KEY=tvly-your-actual-key
+```
+
+### Step 3: Verify Configuration
+
+```bash
+python verify_config.py
+```
+
+Expected output:
+```
+✅ Configuration is valid! Ready to run the application.
+```
+
+**If verification fails:**
+- See [SECURITY.md](SECURITY.md) for detailed setup help
+- Ensure ANTHROPIC_API_KEY is not the placeholder value
+
+---
+
+## Configuration
+
+**Priority order** (first match wins):
+
+1. **`config.json`** ← Primary (production recommended)
+2. **`.env` file** ← Fallback (development)
+3. **System environment variables** ← For CI/CD
+4. **Built-in defaults** ← Final fallback
+
+**Key Details:**
+
+| Setting | Source | Default | Notes |
+|---------|--------|---------|-------|
+| `ANTHROPIC_API_KEY` | config.json or .env | — | **Required** (get at https://console.anthropic.com) |
+| `TAVILY_API_KEY` | config.json or .env | — | Recommended (free tier at https://tavily.com) |
+| `CHROMA_PERSIST_DIR` | config.json or env | `./data/chroma_db` | Vector store location |
+| `OBSIDIAN_VAULT_DIR` | config.json or env | `./data/obsidian_vault` | Notes folder |
+
+> **Security Note:** `config.json` and `.env` are in `.gitignore` and will never be committed to version control.
+
+---
+
+## Choose Your Interface: CLI or Web
+
+You have **two ways** to use Healthcare RAG Agent:
+
+### 🌐 Web Interface (Streamlit) — Recommended for Most Users
+
+**Best for:**
+- Non-technical users
+- Beautiful formatting & conversation history
+- Sharing with others
+- Team collaboration
+
+**To start:**
+```bash
+streamlit run streamlit_app.py
+```
+
+**Opens at:** http://localhost:8501
+
+**Features:**
+- 📝 Simple text input for questions
+- 💬 Conversation history sidebar
+- 📚 Browse saved notes by topic
+- 🎬 Clickable video recommendations
+- 📖 Formatted citations & sources
+- 🌙 Dark mode support
+
+**Or use the interactive launcher:**
+```bash
+python launcher.py
+# Select option 1 for Streamlit
+```
+
+### 💻 CLI Interface — Best for Automation & Scripting
+
+**Best for:**
+- Batch processing
+- Scripting & automation
+- Integration with other tools
+- Lightweight & fast
+
+**To start:**
+```bash
+python main.py ask "Your health question"
+```
+
+**Or use the interactive launcher:**
+```bash
+python launcher.py
+# Select option 2 for CLI
 ```
 
 ---
 
 ## Quick Start
 
+### Quick Start: Web Interface (3 steps)
+
 ```bash
-# Ask a question
+# 1. Start the app
+streamlit run streamlit_app.py
+
+# 2. Open your browser
+# Automatically opens at http://localhost:8501
+
+# 3. Ask a question
+# Type your question in the text input and click Search
+```
+
+### Quick Start: CLI Interface (1 command)
+
+```bash
+# Ask a question directly
+python main.py ask "What are all treatment options for Type 2 diabetes?"
+```
+
+### Examples for Both Modes
+
+**Example 1: Treatment options**
+```bash
+# CLI
 python main.py ask "What are all treatment options for Type 2 diabetes?"
 
-# More examples
-python main.py ask "Hemophilia A factor replacement therapy options"
-python main.py ask "Natural and medical treatments for weight loss"
-python main.py ask "HPV vaccine safety and effectiveness evidence"
-python main.py ask "Breast cancer treatment overview all options"
+# Web: Type in the input field, click Search
+```
 
-# Verbose mode (shows tool calls)
-python main.py ask "diabetes supplements" --verbose
+**Example 2: Specific therapy dimension**
+```bash
+# CLI
+python main.py ask "Natural supplements for diabetes management"
 
-# JSON output for programmatic use
+# Web: Type the question, get formatted answers by therapy dimension
+```
+
+**Example 3: Verbose mode (CLI only - see tool calls)**
+```bash
+python main.py ask "hemophilia factor replacement therapy" --verbose
+```
+
+**Example 4: JSON output (CLI only - for scripting)**
+```bash
 python main.py ask "cancer immunotherapy" --json
 ```
 
----
-
-## Web Interface (Streamlit)
-
-For a user-friendly web interface, use the Streamlit app:
+### Quick Examples to Try
 
 ```bash
-# Start the web app
-streamlit run streamlit_app.py
+# FDA-approved treatments
+"What are FDA-approved treatments for breast cancer?"
 
-# This opens a browser window with the interactive interface
-# Features:
-#   - Ask questions with a simple text input
-#   - View formatted answers with citations
-#   - Browse saved notes by topic
-#   - Conversation history sidebar
-#   - Dark mode support
+# Complementary approaches
+"Natural and alternative treatments for anxiety"
+
+# Vaccine information
+"HPV vaccine safety and effectiveness evidence"
+
+# Weight management
+"Prescription medications vs. supplements for weight loss"
+
+# Disease management
+"Diabetes: insulin vs. oral medications vs. supplements"
 ```
-
-**Access the app:**
-- Opens automatically at http://localhost:8501
-- Share the app by running with `--server.headless true` for remote access
-- See [Streamlit deployment docs](https://docs.streamlit.io/deploy/streamlit-community-cloud) for hosting
 
 ---
 
-## Memory Commands
+## Advanced: Memory & Notes
+
+### View & Manage Saved Notes
 
 ```bash
 # List all saved notes
@@ -113,11 +279,54 @@ python main.py notes --topic cancer
 
 # Show memory statistics
 python main.py stats
-
-# Ingest a local document
-python main.py ingest /path/to/research_paper.txt --topic cancer \
-  --url https://pubmed.example.com/123 --title "My Research Paper"
 ```
+
+### Ingest Local Documents
+
+```bash
+# Add a research paper to your knowledge base
+python main.py ingest /path/to/research_paper.txt \
+  --topic cancer \
+  --url https://pubmed.example.com/123 \
+  --title "My Research Paper"
+```
+
+### Obsidian Integration
+
+1. Open Obsidian app → `File` → `Open Folder as Vault`
+2. Select `./data/obsidian_vault`
+3. Auto-tagged by topic and therapy dimension
+4. Use graph view to explore knowledge connections
+
+---
+
+## Programmatic Use (Python)
+
+```python
+from agent.orchestrator import HealthcareRAGAgent
+
+agent = HealthcareRAGAgent()
+response = agent.ask("What supplements help with blood sugar control?")
+
+# Access response components
+print(response.answer)                    # Main answer text
+print(response.citations)                 # List of sources
+print(response.youtube_links)             # List of video links
+print(response.therapy_sections)          # Dict of dimension → content
+print(f"{response.elapsed_seconds:.1f}s") # Response time
+```
+
+---
+
+## Documentation Guide
+
+| Document | Purpose | For Whom |
+|----------|---------|----------|
+| **README.md** | Overview, setup, quick start | Everyone (you're reading it!) |
+| **SECURITY.md** | API key setup, credential management | Initial setup, security concerns |
+| **STREAMLIT.md** | Web interface detailed guide | Web users, deployment |
+| **launcher.py** | Interactive menu system | Users who want an easy launcher |
+| **verify_config.py** | Configuration validation | Troubleshooting setup issues |
 
 ---
 
@@ -206,67 +415,6 @@ The agent preferentially retrieves from:
 
 **Evidence synthesis**
 - cochranelibrary.com
-
----
-
-## Obsidian Integration
-
-1. Open Obsidian → `File` → `Open Folder as Vault`
-2. Select `./data/obsidian_vault`
-3. Notes are auto-tagged by topic and therapy dimension
-4. Use the graph view to explore knowledge connections over time
-
----
-
-## Programmatic Use
-
-```python
-from agent.orchestrator import HealthcareRAGAgent
-
-agent = HealthcareRAGAgent()
-response = agent.ask("What supplements help with blood sugar control?")
-
-print(response.answer)
-print(response.citations)
-print(response.youtube_links)
-print(response.therapy_sections["Supplementation"])
-```
-
----
-
-## Configuration
-
-Settings are loaded from multiple sources (in order of precedence):
-
-1. **config.json** (production, secrets protected)
-2. **Environment variables** (.env file or system env)
-3. **Built-in defaults** (config/settings.py)
-
-### Setup Options
-
-**Production / Secure Setup:**
-```bash
-cp config.example.json config.json
-# Edit config.json with your API keys
-# config.json is in .gitignore and will not be committed
-```
-
-**Development / Simple Setup:**
-```bash
-cp .env.example .env
-# Edit .env with your API keys
-# Both methods work, but config.json is recommended for production
-```
-
-### Configuration Keys
-
-| Setting | Source | Default | Description |
-|---|---|---|---|
-| `api_keys.anthropic_api_key` | config.json or env | — | Required. Get from https://console.anthropic.com |
-| `api_keys.tavily_api_key` | config.json or env | — | Recommended. Free tier at https://tavily.com |
-| `model.name` | config.json | `claude-opus-4-5` | Anthropic model to use |
-| `storage.chroma_persist_dir` | config.json or env | `./data/chroma_db` | Vector database location |
-| `storage.obsidian_vault_dir` | config.json or env | `./data/obsidian_vault` | Knowledge notes location |
 
 ---
 
