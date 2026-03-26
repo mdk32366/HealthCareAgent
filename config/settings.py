@@ -92,9 +92,7 @@ class Settings(BaseModel):
 
     # ── Retrieval ───────────────────────────────────────────────────
     top_k_retrieval: int = Field(
-        default=12,
         default_factory=lambda: _config_data.get("retrieval", {}).get("top_k_retrieval", 12)
-    )_factory=lambda: _config_data.get("retrieval", {}).get("top_k_retrieval", 12)
     )
     top_k_rerank: int = Field(
         default_factory=lambda: _config_data.get("retrieval", {}).get("top_k_rerank", 6)
@@ -103,8 +101,8 @@ class Settings(BaseModel):
         default_factory=lambda: _config_data.get("retrieval", {}).get("chunk_size", 800)
     )
     chunk_overlap: int = Field(
-
-    # ── Topics ──────────────────────────────────────────────────────
+        default_factory=lambda: _config_data.get("retrieval", {}).get("chunk_overlap", 120)
+    )
     health_topics: list[str] = Field(
         default_factory=lambda: _config_data.get("health_topics", [
             "vaccines", "cancer", "hemophilia", "weight control", "diabetes"
