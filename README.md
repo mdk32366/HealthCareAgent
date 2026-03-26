@@ -19,6 +19,8 @@ with persistent memory via ChromaDB and an Obsidian Markdown vault.
 | **Health topics** | Vaccines · Cancer · Hemophilia · Weight control · Diabetes |
 | **Source citations** | Every factual claim linked to its source URL |
 | **Safety layer** | Always-present medical disclaimer + hallucination guidance |
+| **Web interface** | Streamlit app for easy browser-based access |
+| **CLI tool** | Powerful command-line interface for automation |
 
 ---
 
@@ -72,6 +74,30 @@ python main.py ask "diabetes supplements" --verbose
 # JSON output for programmatic use
 python main.py ask "cancer immunotherapy" --json
 ```
+
+---
+
+## Web Interface (Streamlit)
+
+For a user-friendly web interface, use the Streamlit app:
+
+```bash
+# Start the web app
+streamlit run streamlit_app.py
+
+# This opens a browser window with the interactive interface
+# Features:
+#   - Ask questions with a simple text input
+#   - View formatted answers with citations
+#   - Browse saved notes by topic
+#   - Conversation history sidebar
+#   - Dark mode support
+```
+
+**Access the app:**
+- Opens automatically at http://localhost:8501
+- Share the app by running with `--server.headless true` for remote access
+- See [Streamlit deployment docs](https://docs.streamlit.io/deploy/streamlit-community-cloud) for hosting
 
 ---
 
