@@ -320,6 +320,6 @@ def _extract_therapy_sections(text: str) -> dict[str, str]:
         # Flexible regex: matches markdown headers or bold/plain text
         pattern = rf"(?:#{1,3}|[\*_]{{0,2}})\s*{re.escape(dim)}\s*(?:[\*_]{{0,2}})?\s*:?\n(.*?)(?=(?:#{1,3}|[\*_]{{0,2}})\s*(?:{'|'.join(map(re.escape, dims))})|$)"
         m = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
-        if m:
+        if m and m.group(1) is not None:
             sections[dim] = m.group(1).strip()[:2000]
     return sections

@@ -38,34 +38,31 @@ st.markdown("""
         margin: 12px 0;
     }
     .citation {
-        background-color: #f0f2f6;
         padding: 8px 12px;
         border-radius: 4px;
         margin: 4px 0;
         font-size: 0.9em;
+        border-left: 3px solid #999;
     }
     .video-link {
-        background-color: #ffe6e6;
         padding: 8px 12px;
         border-radius: 4px;
         margin: 4px 0;
+        border-left: 3px solid #ff6b6b;
     }
     .safety-disclaimer {
-        background-color: #fff3cd;
         border-left: 4px solid #ff9800;
         padding: 12px;
         border-radius: 4px;
         margin: 16px 0;
     }
     .response-container {
-        border: 1px solid #ddd;
+        border: 1px solid #666;
         padding: 16px;
         border-radius: 8px;
         margin: 16px 0;
-        background-color: #fafafa;
     }
     .question-bubble {
-        background-color: #e3f2fd;
         padding: 12px;
         border-radius: 8px;
         margin: 8px 0;
