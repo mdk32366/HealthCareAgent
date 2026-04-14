@@ -153,10 +153,11 @@ def deep_search(
     query: str,
     topic: HealthTopic,
     scrape_top_n: int = 3,
+    include_academic: bool = True,
 ) -> list[SourceDocument]:
     """
-    Full pipeline: search → scrape top N pages for richer content.
-    Returns merged, deduplicated SourceDocuments.
+    Full pipeline: web search → scrape top N pages + academic sources.
+    Returns merged, deduplicated SourceDocuments from both web and academia.
     """
     # Topic-specific query enrichment
     topic_suffix = {
@@ -168,6 +169,8 @@ def deep_search(
     }.get(topic, "")
 
     enriched_query = f"{query} {topic_suffix}".strip()
+    
+    # ── Start with web search ─────────────────────────────────────────────
     docs = tavily_search(enriched_query, max_results=10)
 
     # Scrape unique top URLs for fuller context
@@ -189,5 +192,22 @@ def deep_search(
                     chunk_id=hashlib.md5(f"scraped:{doc.url}{j}".encode()).hexdigest(),
                 ))
             scraped_count += 1
+
+    # ── Augment with academic sources ─────────────────────────────────────
+    if include_academic:
+        try:
+            from retrieval.academic_sources import search_academic_sources
+            academic_docs = search_academic_sources(
+                query=query,
+                topic=topic,
+                include_preprints=True,
+                include_oa=True,
+                include_chembl=True,
+                include_lens=True,
+            )
+            docs.extend(academic_docs)
+            log.info(f"Added {len(academic_docs)} academic source documents to retrieval")
+        except Exception as e:
+            log.warning(f"Error retrieving academic sources: {e}")
 
     return docs
