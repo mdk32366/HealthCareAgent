@@ -45,6 +45,19 @@ The Healthcare RAG Agent now incorporates multiple academic and scientific data 
   - Institutional repository indexing (CORE)
 - **Dimensions**: All dimensions, broad coverage
 
+### 5. **OpenAlex (Comprehensive Scholarly Catalog)**
+- **Type**: Free, open, comprehensive catalog of scholarly communication
+- **Coverage**: 200M+ papers, authors, institutions, and research topics
+- **Use Case**: Comprehensive article discovery with citation context
+- **API**: Free, public API (no authentication required)
+- **Features**:
+  - Citation count and relevance ranking
+  - Research topic classification
+  - Open-access status detection
+  - Author and institutional metadata
+  - Covers all research disciplines
+- **Dimensions**: All therapy dimensions, high citation relevance
+
 ## Integration Architecture
 
 ```
@@ -55,7 +68,8 @@ deep_search()
       ├── bioRxiv/medRxiv
       ├── CrossRef + Unpaywall
       ├── ChEMBL
-      └── Lens.org/CORE
+      ├── Lens.org/CORE
+      └── OpenAlex
 ```
 
 ## Source Selection & Quality
@@ -68,6 +82,7 @@ Each source adds distinct value:
 | CrossRef+Unpaywall | Verified citations | Peer-reviewed articles, OA full-text |
 | ChEMBL | Drug/mechanism data | Specific drug/supplement information |
 | Lens.org/CORE | Broad coverage | Comprehensive discovery |
+| OpenAlex | Citation relevance | Highly-cited research, comprehensive discovery |
 
 ## API Rate Limits & Performance
 
@@ -78,6 +93,7 @@ Each source adds distinct value:
 | Unpaywall | 1 req/second | 0.2-0.5 second |
 | ChEMBL | Reasonable | 1-2 seconds |
 | Lens/CORE | Variable | 1-5 seconds |
+| OpenAlex | 100k/month (free) | 0.5-1 second |
 
 All queries include timeout handling and graceful fallback.
 
@@ -94,6 +110,7 @@ include_preprints=True      # bioRxiv/medRxiv
 include_oa=True             # CrossRef+Unpaywall
 include_chembl=True         # ChEMBL
 include_lens=True           # Lens/CORE
+include_openalex=True       # OpenAlex
 ```
 
 ## Citation & Attribution

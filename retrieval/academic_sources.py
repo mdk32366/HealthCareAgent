@@ -313,6 +313,83 @@ def lens_org_search(query: str, max_results: int = 10) -> list[SourceDocument]:
     return docs
 
 
+# ── OpenAlex (Comprehensive Scholarly Communication Catalog) ──────────────────
+def openalexsearch(query: str, max_results: int = 20) -> list[SourceDocument]:
+    """
+    Search OpenAlex for comprehensive scholarly article coverage.
+    OpenAlex is a free, open catalog of scholarly communication.
+    Covers papers, authors, institutions, and research topics.
+    """
+    docs = []
+    try:
+        openalexurl = "https://api.openalex.org/works"
+        
+        params = {
+            "search": query,
+            "per_page": min(max_results, 100),  # OpenAlex supports up to 100 per page
+            "select": "id,title,aperture,publication_date,authors_count,cited_by_count,open_access,primary_topic",
+            "sort": "-cited_by_count",  # Sort by citation count for relevance
+        }
+        
+        resp = requests.get(openalexurl, params=params, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        
+        for work in data.get("results", [])[:max_results]:
+            try:
+                title = work.get("title", "")
+                openalex_id = work.get("id", "").replace("https://openalex.org/", "")
+                pub_date = work.get("publication_date", "")
+                cited_by = work.get("cited_by_count", 0)
+                is_oa = work.get("open_access", {}).get("is_oa", False)
+                
+                # Get URL
+                url = work.get("id", "") or f"https://openalex.org/{openalex_id}"
+                
+                # Try to get open access link
+                oa_info = work.get("open_access", {})
+                if is_oa and oa_info.get("oa_url"):
+                    url = oa_info.get("oa_url")
+                
+                # Get abstract
+                abstract = work.get("abstract", "") or ""
+                
+                # Get topic and keywords
+                topic_info = work.get("primary_topic", {})
+                topic_name = topic_info.get("display_name", "") if topic_info else ""
+                
+                authors_count = work.get("authors_count", 0)
+                
+                content = (
+                    f"{title}\n\n"
+                    f"Publication Date: {pub_date}\n"
+                    f"Citations: {cited_by} | Authors: {authors_count}\n"
+                    f"Topic: {topic_name}\n"
+                    f"Open Access: {'Yes' if is_oa else 'No'}\n"
+                    f"\n{abstract}"
+                )
+                
+                for j, chunk in enumerate(_chunk_text(content)):
+                    source_type = "article_openalex_oa" if is_oa else "article_openalex"
+                    docs.append(SourceDocument(
+                        content=chunk,
+                        url=url,
+                        title=f"{title} {'[OA]' if is_oa else ''} (Cited: {cited_by})",
+                        source_type=source_type,
+                        published_date=pub_date,
+                        therapy_dimension=_tag_dimension(chunk),
+                        chunk_id=hashlib.md5(f"openalex:{openalex_id}{j}".encode()).hexdigest(),
+                    ))
+            except Exception as e:
+                log.debug(f"Error processing OpenAlex work: {e}")
+        
+        log.info(f"OpenAlex returned {len(docs)} chunks for: {query!r}")
+    except Exception as e:
+        log.warning(f"OpenAlex search error: {e}")
+    
+    return docs
+
+
 # ── Unified academic search ───────────────────────────────────────────────────
 def search_academic_sources(
     query: str,
@@ -321,9 +398,16 @@ def search_academic_sources(
     include_oa: bool = True,
     include_chembl: bool = True,
     include_lens: bool = True,
+    include_openalex: bool = True,
 ) -> list[SourceDocument]:
     """
-    Unified search across all academic sources.
+    Unified search across all academic sources:
+    - bioRxiv/medRxiv (preprints)
+    - CrossRef + Unpaywall (DOI resolution & OA)
+    - ChEMBL (drug targets)
+    - Lens.org/CORE (OA aggregators)
+    - OpenAlex (comprehensive scholarly catalog)
+    
     Allows selective enabling/disabling of each source.
     """
     all_docs: list[SourceDocument] = []
@@ -355,6 +439,10 @@ def search_academic_sources(
         log.debug(f"Searching Lens.org for: {enriched_query}")
         all_docs.extend(lens_org_search(enriched_query, max_results=5))
     
+    if include_openalex:
+        log.debug(f"Searching OpenAlex for: {enriched_query}")
+        all_docs.extend(openalexsearch(enriched_query, max_results=20))
+    
     # Deduplicate by URL + chunk_id
     seen = set()
     deduped = []
@@ -369,3 +457,4 @@ def search_academic_sources(
         f"from {len(all_docs)} total across all sources"
     )
     return deduped
+
