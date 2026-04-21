@@ -388,6 +388,29 @@ def main():
             3. **Supplementation** - Vitamins, minerals, and over-the-counter supplements
             4. **Surgical / procedural** - Surgical interventions and medical procedures
             
+            ### Research Resources
+            This agent synthesizes information from multiple authoritative sources:
+            
+            **Academic & Preprint Servers:**
+            - **bioRxiv/medRxiv** - Latest peer-reviewed preprints (new research findings)
+            - **OpenAlex** - 200M+ papers with citation rankings and topic classification
+            
+            **Peer-Reviewed & Open Access:**
+            - **CrossRef + Unpaywall** - Verified citations with automatic OA full-text detection
+            - **PubMed/NIH** - U.S. National Library of Medicine research database
+            
+            **Specialized Databases:**
+            - **ChEMBL** - Drug-target interactions and supplementation research
+            - **Lens.org/CORE** - Institutional repositories and open-access aggregators
+            
+            **Trusted Medical Sources:**
+            - **CDC, FDA, WHO** - Government health agencies
+            - **Mayo Clinic, Johns Hopkins, Cleveland Clinic** - Academic medical centers
+            - **Cancer.gov, Diabetes.org, Hemophilia.org** - Specialty organizations
+            
+            All sources are selected for scientific credibility and are regularly updated.
+            Every claim includes direct links to source documents.
+            
             ### Important Disclaimer
             This tool provides **educational information only**. It does not constitute medical advice.
             Always consult a qualified healthcare professional before starting, changing, or stopping any treatment.
